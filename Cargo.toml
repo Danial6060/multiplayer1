@@ -1,0 +1,31 @@
+[workspace]
+members = ["server", "client"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bevy = { version = "0.15.3" }
+bevy_renet = "1.0.0"
+renet = "1.0.0"
+renet_netcode = "1.0.0"
+
+# Make the root a runnable package so `cargo run` works from the workspace root.
+[package]
+name = "multiplayer-fps-root"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+server = { path = "server" }
+
+[[bin]]
+name = "launcher"
+path = "src/main.rs"
+
+[alias]
+client = ["run", "-p", "client"]
+server = ["run", "-p", "server"]

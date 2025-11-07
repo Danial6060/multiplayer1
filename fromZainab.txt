@@ -1,0 +1,54 @@
+I made change in these:
+server/src/playe: 
+player_new_position.rs
+player_types.rs
+
+server/src/map/types.rs
+
+server/src/types.rs
+
+server/src/client:
+movement.rs
+shooting_events.rs
+shooting.rs
+
+
+Reasons:
+
+Reduce heavy dependencies that caused Windows build 
+issues (especially with GNU toolchain) like linker/memory errors.
+
+Keep the server lightweight and rendering-free, which is the intended use.
+
+To achieve this, we created a local prelude in lib.rs 
+exporting only the types we need (Vec2/Vec3, Timer, Resource) from the sub-crates bevy_math, bevy_time, bevy_ecs, bevy_app.
+
+Any file that previously did use 
+bevy::prelude::* now imports from crate::prelude::* or directly from the sub-crates.
+
+(((No game logic changed, only import paths were updated.)))
+
+
+Examples of file changes
+player_new_position.rs:
+// before
+use bevy::prelude::Vec3;
+// after
+use crate::prelude::Vec3;
+
+player_types.rs / movement.rs / shooting.rs / shooting_events.rs / types.rs:
+// before
+use bevy::prelude::*;
+// after
+use crate::prelude::*;
+
+types.rs (Resource):
+// before
+use bevy::ecs::system::Resource;
+// after
+use bevy_ecs::system::Resource;
+
+
+All these changes are import adjustments only to 
+make the server run headless and avoid pulling in the renderer. 
+Game behavior and logic remain unchanged.
